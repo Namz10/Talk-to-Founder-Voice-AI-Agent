@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #0D0D0F;
+  color: #F0EEE9;
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+@keyframes waveform {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.86;
+  }
+}
+
+@keyframes dot-pulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes bar-bounce {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.8);
+  }
+}
+
+@keyframes speaking-bounce {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(2.2);
+  }
+}
+
+@keyframes indicator-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes idle-ring-pulse {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
+
+.wave-bar {
+  animation: waveform 900ms ease-in-out infinite;
+  transform-origin: center;
+}
+
+.soft-pulse {
+  animation: soft-pulse 1800ms ease-in-out infinite;
+}
+
+.thinking-dot {
+  animation: dot-pulse 1000ms ease-in-out infinite;
+}
+
+.listening-bar {
+  animation: bar-bounce 0.6s ease-in-out infinite;
+}
+
+.speaking-bar {
+  animation: speaking-bounce 0.45s ease-in-out infinite;
+}
+
+.thinking-dot-v2 {
+  animation: indicator-pulse 0.8s ease-in-out infinite;
+}
+
+.connecting-dot {
+  animation: indicator-pulse 1.5s ease-in-out infinite;
+}
+
+.idle-pulse-circle {
+  width: 120px;
+  height: 120px;
+  border: 1px solid #2A2A30;
+  border-radius: 9999px;
+  animation: idle-ring-pulse 2.5s ease-in-out infinite;
+  z-index: -1;
+}
+
+.transcript-top-fade {
+  background: linear-gradient(to bottom, #1A1A1F 0%, transparent 100%);
+}
+
+.anim-delay-0 {
+  animation-delay: 0s;
+}
+
+.anim-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.anim-delay-150 {
+  animation-delay: 0.15s;
+}
+
+.anim-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.anim-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.wave-delay-0,
+.dot-delay-0 {
+  animation-delay: 0ms;
+}
+
+.wave-delay-1 {
+  animation-delay: 90ms;
+}
+
+.wave-delay-2 {
+  animation-delay: 180ms;
+}
+
+.wave-delay-3 {
+  animation-delay: 270ms;
+}
+
+.wave-delay-4 {
+  animation-delay: 360ms;
+}
+
+.dot-delay-1 {
+  animation-delay: 120ms;
+}
+
+.dot-delay-2 {
+  animation-delay: 240ms;
+}
