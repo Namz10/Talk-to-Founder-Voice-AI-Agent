@@ -33,7 +33,7 @@ const STEPS = [
   },
 ];
 
-export default function ProcessDiagram() {
+export default function ProcessDiagram({ activeStep = null }) {
   return (
     <div className="flex h-full flex-col">
       <h2 className="mb-6 font-serif text-[20px] leading-none text-maneuver-text">How we work</h2>
@@ -47,11 +47,23 @@ export default function ProcessDiagram() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.25, delay: index * 0.08 }}
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-maneuver-border font-mono text-[11px] text-maneuver-muted">
+              <div
+                className={`flex h-8 w-8 items-center justify-center rounded-full border font-mono text-[11px] ${
+                  activeStep === index + 1
+                    ? 'border-maneuver-accent text-maneuver-accent'
+                    : 'border-maneuver-border text-maneuver-muted'
+                }`}
+              >
                 {step.number}
               </div>
               <div className="min-w-0 pb-1">
-                <h3 className="text-[13px] font-semibold leading-5 text-maneuver-text">{step.name}</h3>
+                <h3
+                  className={`text-[13px] font-semibold leading-5 ${
+                    activeStep === index + 1 ? 'text-maneuver-text' : 'text-maneuver-muted'
+                  }`}
+                >
+                  {step.name}
+                </h3>
                 <p className="mt-1 text-[12px] leading-5 text-maneuver-muted">{step.description}</p>
               </div>
               <span className="rounded-full border border-maneuver-border px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-maneuver-muted">

@@ -93,7 +93,7 @@ export default function ServicesSlide() {
         {SERVICES.map((service, index) => (
           <motion.article
             key={service.slug}
-            className="rounded-xl border border-maneuver-border bg-maneuver-card px-[14px] py-3 transition-colors duration-150 hover:border-maneuver-accent"
+            className="group relative rounded-xl border border-maneuver-border bg-maneuver-card px-[14px] py-3 transition-colors duration-150 hover:border-maneuver-accent"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, delay: index * 0.04 }}
@@ -113,6 +113,9 @@ export default function ServicesSlide() {
             </p>
             <span className="font-mono text-[10px] uppercase tracking-wide text-maneuver-muted">
               {service.duration}
+            </span>
+            <span className="absolute bottom-3 right-[14px] text-[10px] text-maneuver-muted opacity-0 transition-opacity duration-150 group-hover:opacity-60">
+              &rarr; Ask about this
             </span>
           </motion.article>
         ))}

@@ -6,42 +6,42 @@ import ProcessDiagram from '../slides/ProcessDiagram.jsx';
 import ServiceDetail from '../slides/ServiceDetail.jsx';
 
 const CASE_STUDIES = {
-  finflow: {
-    client: 'FinFlow',
+  'northstar-ledger': {
+    client: 'Northstar Ledger',
     industry: 'Fintech',
-    problem: 'High drop-off in onboarding - 68% of signups never connected their first account.',
+    problem: 'High drop-off in onboarding - new users were abandoning onboarding before connecting their accounting data.',
     solution:
-      'Redesigned onboarding with progressive disclosure and trust indicators. Ran 3-week discovery sprint before touching UI.',
-    outcome: '41% reduction in onboarding drop-off. $2.3M Series A closed 6 weeks post-launch.',
+      'Maneuver redesigned the onboarding flow, clarified the product promise, and created a progressive setup experience that let users see value before completing every integration.',
+    outcome: 'Trial activation increased by 38%, onboarding completion improved from 42% to 67%, and sales-assisted demos shortened by one full call on average.',
     service: 'UX & Interface Design',
     duration: '6 weeks',
   },
-  stackpilot: {
-    client: 'StackPilot',
-    industry: 'Developer Tools',
-    problem: 'No coherent visual identity - looked like an internal tool, not a product.',
+  lumahire: {
+    client: 'LumaHire',
+    industry: 'Developer Tools & HR Tech',
+    problem: 'The recruiting platform had enterprise interest, but the product looked too lightweight for buyers evaluating it against larger incumbents.',
     solution:
-      'Full brand identity system + design system. Created a technical-but-approachable aesthetic that resonated with senior engineers.',
-    outcome: '3x increase in trial signups in 30 days post-rebrand. Featured on Product Hunt #2 of the day.',
+      'Maneuver rebuilt the core dashboard experience, introduced a more credible brand identity system, and designed a reporting layer for hiring leaders.',
+    outcome: 'The team closed two mid-market pilots within 60 days, increased average contract value by 24%, and reduced custom demo preparation time by about 40%.',
     service: 'Brand Identity + Design System',
     duration: '8 weeks',
   },
-  loophr: {
-    client: 'LoopHR',
-    industry: 'HR Tech',
-    problem: 'Needed to go from Figma to working product in 10 weeks before a board demo.',
+  carepilot: {
+    client: 'CarePilot',
+    industry: 'Health Tech',
+    problem: 'CarePilot was preparing for a seed extension and needed to prove that its care coordination concept could work as a usable MVP.',
     solution:
-      'MVP build from approved designs. Next.js app with Supabase backend, Stripe integration, and admin dashboard.',
-    outcome: 'Shipped on time. Board extended runway. Product now has 40+ paying customers.',
+      'Maneuver ran a discovery sprint, defined the MVP scope, built a React prototype, and then shipped a production pilot with secure role-based workflows.',
+    outcome: 'The pilot supported 11 clinic users in the first month, reduced manual coordination tasks by 31%, and helped the company secure a $1.8M seed extension.',
     service: 'MVP Build',
     duration: '10 weeks',
   },
 };
 
 const CASE_ALIASES = {
-  'northstar-ledger': 'finflow',
-  lumahire: 'stackpilot',
-  carepilot: 'loophr',
+  finflow: 'northstar-ledger',
+  stackpilot: 'lumahire',
+  loophr: 'carepilot',
 };
 
 const LEAD_LABELS = {
@@ -69,15 +69,24 @@ function IdleScreen() {
   );
 }
 
+function normalizeSlug(slug) {
+  if (!slug) return '';
+  return slug
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 function CaseStudyCard({ clientSlug }) {
-  const normalizedSlug = CASE_ALIASES[clientSlug] || clientSlug;
+  const slug = normalizeSlug(clientSlug);
+  const normalizedSlug = CASE_ALIASES[slug] || slug;
   const study = CASE_STUDIES[normalizedSlug];
 
   if (!study) {
     return (
       <div className="flex h-full items-center justify-center text-center">
         <div className="rounded-xl border border-maneuver-border bg-maneuver-card p-6">
-          <h2 className="font-serif text-[20px] text-maneuver-text">Case study not found</h2>
+          <h2 className="font-serif text-[20px] text-maneuver-text">Case study not found ({clientSlug})</h2>
           <p className="mt-2 text-[12px] text-maneuver-muted">Ask Alex about another client story.</p>
         </div>
       </div>
@@ -188,13 +197,37 @@ function renderVisual(currentVisual) {
   return <IdleScreen />;
 }
 
-export default function VisualPanel({ callEndedLead = null }) {
+function ConnectionDot({ state }) {
+  const colorClass =
+    state === 'connected'
+      ? 'bg-maneuver-teal'
+      : state === 'connecting'
+        ? 'connecting-dot bg-amber-400'
+        : 'bg-maneuver-muted';
+
+  return <span className={`h-2 w-2 rounded-full ${colorClass}`} title={state || 'disconnected'} />;
+}
+
+export default function VisualPanel({ callEndedLead = null, externalVisual = undefined }) {
   const room = useRoomContext();
   const [currentVisual, setCurrentVisual] = useState(null);
+  const [visualCounter, setVisualCounter] = useState(0);
+  const connectionState = room?.state || 'disconnected';
+
+  function applyVisual(visual) {
+    setVisualCounter((counter) => counter + 1);
+    setCurrentVisual(visual);
+  }
+
+  useEffect(() => {
+    if (externalVisual !== undefined) {
+      applyVisual(externalVisual.visual);
+    }
+  }, [externalVisual]);
 
   useEffect(() => {
     if (callEndedLead) {
-      setCurrentVisual({ type: 'call_ended', leadData: callEndedLead });
+      applyVisual({ type: 'call_ended', leadData: callEndedLead });
     }
   }, [callEndedLead]);
 
@@ -204,8 +237,15 @@ export default function VisualPanel({ callEndedLead = null }) {
     }
 
     const handler = async (data) => {
-      const payload = JSON.parse(data.payload || '{}');
-      setCurrentVisual(payload);
+      try {
+        const payload = JSON.parse(data.payload || '{}');
+        applyVisual(payload);
+      } catch (error) {
+        console.error('Failed to parse show_visual RPC payload:', error, data.payload);
+        if (data.payload && typeof data.payload === 'object') {
+          applyVisual(data.payload);
+        }
+      }
       return JSON.stringify({ success: true });
     };
 
@@ -216,19 +256,27 @@ export default function VisualPanel({ callEndedLead = null }) {
   }, [room]);
 
   return (
-    <div className="h-full overflow-hidden">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={visualKey(currentVisual)}
-          className="h-full"
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.03 }}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
-        >
-          {renderVisual(currentVisual)}
-        </motion.div>
-      </AnimatePresence>
+    <div className="flex h-full flex-col overflow-hidden">
+      <header className="flex h-10 flex-shrink-0 items-center justify-between border-b border-maneuver-border px-6">
+        <div className="text-[11px] font-medium uppercase tracking-[0.1em] text-maneuver-muted">
+          Maneuver
+        </div>
+        <ConnectionDot state={connectionState} />
+      </header>
+      <div className="min-h-0 flex-1 overflow-hidden p-6">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${visualKey(currentVisual)}-${visualCounter}`}
+            className="h-full"
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.03 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          >
+            {renderVisual(currentVisual)}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

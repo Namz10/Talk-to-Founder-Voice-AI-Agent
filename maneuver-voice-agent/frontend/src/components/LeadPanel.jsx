@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useRoomContext } from '@livekit/components-react';
 
 const FIELD_LABELS = {
@@ -22,9 +22,16 @@ const EMPTY_LEAD = {
   contact_email: '',
 };
 
-export default function LeadPanel() {
+export default function LeadPanel({ demoLeadPatch = null }) {
   const room = useRoomContext();
   const [leadFields, setLeadFields] = useState(EMPTY_LEAD);
+  const isEmpty = Object.values(leadFields).every((value) => value === '');
+
+  useEffect(() => {
+    if (demoLeadPatch?.field && Object.prototype.hasOwnProperty.call(EMPTY_LEAD, demoLeadPatch.field)) {
+      setLeadFields((prev) => ({ ...prev, [demoLeadPatch.field]: demoLeadPatch.value }));
+    }
+  }, [demoLeadPatch]);
 
   useEffect(() => {
     if (!room?.localParticipant) {
@@ -32,9 +39,19 @@ export default function LeadPanel() {
     }
 
     const handler = async (data) => {
-      const { field, value } = JSON.parse(data.payload || '{}');
-      if (Object.prototype.hasOwnProperty.call(EMPTY_LEAD, field)) {
-        setLeadFields((prev) => ({ ...prev, [field]: value }));
+      try {
+        const { field, value } = JSON.parse(data.payload || '{}');
+        if (field && Object.prototype.hasOwnProperty.call(EMPTY_LEAD, field)) {
+          setLeadFields((prev) => ({ ...prev, [field]: value }));
+        }
+      } catch (error) {
+        console.error('Failed to parse update_lead_field RPC payload:', error, data.payload);
+        if (data.payload && typeof data.payload === 'object') {
+          const { field, value } = data.payload;
+          if (field && Object.prototype.hasOwnProperty.call(EMPTY_LEAD, field)) {
+            setLeadFields((prev) => ({ ...prev, [field]: value }));
+          }
+        }
       }
       return JSON.stringify({ success: true });
     };
@@ -50,6 +67,19 @@ export default function LeadPanel() {
       <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-maneuver-muted">
         Discovery Notes
       </h2>
+      <AnimatePresence>
+        {isEmpty && (
+          <motion.p
+            className="mb-4 text-[12px] leading-5 text-maneuver-muted"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+          >
+            Discovery notes will appear here as you talk with Alex.
+          </motion.p>
+        )}
+      </AnimatePresence>
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
         {Object.entries(FIELD_LABELS).map(([field, label]) => {
           const value = leadFields[field];

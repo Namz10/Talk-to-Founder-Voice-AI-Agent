@@ -1,10 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useChat } from '@livekit/components-react';
+import { useChat, useParticipants } from '@livekit/components-react';
 
 export default function TranscriptStrip() {
   const { chatMessages = [] } = useChat();
+  const participants = useParticipants();
   const endRef = useRef(null);
+  const agentParticipant = participants.find((participant) => !participant.isLocal);
+  const agentName = agentParticipant?.name || agentParticipant?.identity || 'Alex';
 
   useEffect(() => {
     if (endRef.current) {
@@ -36,7 +39,7 @@ export default function TranscriptStrip() {
                       isLocal ? 'text-maneuver-teal' : 'text-maneuver-accent'
                     }`}
                   >
-                    {isLocal ? 'You' : 'Alex'}
+                    {isLocal ? 'You' : agentName}
                   </div>
                   <div className="text-[12px] leading-[1.5] text-maneuver-muted">
                     {message.message}

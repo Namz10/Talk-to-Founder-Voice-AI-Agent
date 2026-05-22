@@ -1,34 +1,16 @@
-import { SignJWT } from 'jose';
-
-function randomJti() {
-  return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
-}
-
 export async function generateToken(roomName, participantName) {
-  const apiKey = import.meta.env.VITE_LIVEKIT_API_KEY;
-  const apiSecret = import.meta.env.VITE_LIVEKIT_API_SECRET;
+  const tokenServerUrl = import.meta.env.VITE_TOKEN_SERVER_URL || 'http://localhost:8080';
+  const url = `${tokenServerUrl}/api/token?roomName=${encodeURIComponent(roomName)}&participantName=${encodeURIComponent(participantName)}`;
 
-  if (!apiKey || !apiSecret) {
-    throw new Error('Missing VITE_LIVEKIT_API_KEY or VITE_LIVEKIT_API_SECRET');
+  const response = await fetch(url);
+  if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(errData.error || `Failed to fetch token: ${response.statusText}`);
   }
 
-  const now = Math.floor(Date.now() / 1000);
-  const encoder = new TextEncoder();
-
-  return new SignJWT({
-    video: {
-      room: roomName,
-      roomJoin: true,
-      canPublish: true,
-      canSubscribe: true,
-      canPublishData: true,
-    },
-  })
-    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-    .setIssuer(apiKey)
-    .setSubject(participantName)
-    .setJwtId(randomJti())
-    .setIssuedAt(now)
-    .setExpirationTime(now + 60 * 60 * 2)
-    .sign(encoder.encode(apiSecret));
+  const data = await response.json();
+  if (!data.token) {
+    throw new Error('No token returned from server');
+  }
+  return data.token;
 }

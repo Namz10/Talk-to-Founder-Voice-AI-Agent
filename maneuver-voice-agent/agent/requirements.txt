@@ -1,7 +1,8 @@
-livekit-agents[openai,deepgram,cartesia,silero]>=0.12.0
-livekit-plugins-deepgram>=0.6.0
-livekit-plugins-cartesia>=0.3.0
-livekit-plugins-openai>=0.10.0
-livekit-plugins-silero>=0.6.0
+livekit-agents[openai,deepgram,cartesia,silero]>=0.12.0,<1.0.0
+livekit-plugins-deepgram>=0.6.0,<1.0.0
+livekit-plugins-cartesia>=0.3.0,<1.0.0
+livekit-plugins-openai>=0.10.0,<1.0.0
+livekit-plugins-silero>=0.6.0,<1.0.0
 python-dotenv>=1.0.0
 aiofiles>=23.0.0
+

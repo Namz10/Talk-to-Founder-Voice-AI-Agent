@@ -5,9 +5,11 @@ from dotenv import load_dotenv
 from livekit.agents import JobContext, WorkerOptions, cli
 
 from agent import ManeuverAgent
+from token_server import run_token_server
 
 
 load_dotenv()
+run_token_server(port=8080)
 
 
 async def entrypoint(ctx: JobContext):
