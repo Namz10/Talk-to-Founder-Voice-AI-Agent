@@ -6,6 +6,7 @@ import {
   useVoiceAssistant,
 } from '@livekit/components-react';
 import AgentStateIndicator from './AgentStateIndicator.jsx';
+import { findAgentParticipant } from '../rpcPayload.js';
 
 function MicIcon({ className }) {
   return (
@@ -50,8 +51,27 @@ export default function VoiceAgent({ appState, onEndConversation }) {
   }
 
   async function endConversation() {
+    const agentParticipant = findAgentParticipant(room);
+
+    if (agentParticipant && room.localParticipant?.performRpc) {
+      try {
+        const response = await room.localParticipant.performRpc({
+          destinationIdentity: agentParticipant.identity,
+          method: 'end_conversation',
+          payload: JSON.stringify({ reason: 'user_clicked_end' }),
+          responseTimeout: 5_000,
+        });
+        const result = JSON.parse(response || '{}');
+        onEndConversation?.(result.lead);
+      } catch (error) {
+        console.error('Failed to save lead before ending conversation:', error);
+        onEndConversation?.();
+      }
+    } else {
+      onEndConversation?.();
+    }
+
     room.disconnect();
-    onEndConversation?.();
   }
 
   return (

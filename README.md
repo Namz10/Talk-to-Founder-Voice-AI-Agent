@@ -1,180 +1,262 @@
-# Maneuver — Talk to Founder
+# Talk to Founder - Voice AI Agent for Maneuver
 
-A real-time Voice AI agent that runs founder-style discovery calls and answers questions about Maneuver.
+A real-time browser voice agent for Maneuver that runs a founder-style discovery call, answers questions about the company, updates a synchronized visual layer, and saves captured lead context to a local JSON file.
 
-## What it does
+This repository is a submission for the Maneuver Voice AI intern assignment. It uses LiveKit Agents for the voice pipeline, React for the browser UI, and LiveKit RPC/data channels for real-time visual synchronization.
 
-Talk to Founder is a browser-based voice experience for Maneuver, a boutique product strategy and design studio. A visitor clicks "Start conversation" and talks with Alex Rivera, an AI founder persona that asks natural discovery questions, answers questions about Maneuver, and keeps the conversation moving like a short founder call.
+## What It Does
 
-The agent supports two modes in the same call. In discovery mode, it gathers lead context such as name, company, role, problem, timeline, budget, and contact email. In Q&A mode, it answers from Maneuver's local knowledge base and triggers synchronized visuals like service slides, process diagrams, service details, and case studies.
+When a visitor opens the app, they can click **Start conversation**, grant microphone access, and speak with Alex, an AI founder-style representative for Maneuver.
 
-The frontend includes a live discovery notes panel, transcript strip, animated agent state indicator, and visual panel. On call end, captured lead data is appended to `maneuver-voice-agent/agent/leads.json`.
+The agent handles two modes in the same call:
 
-## Demo
+- **Discovery mode:** asks natural founder-style questions about the visitor, company, problem, timeline, budget, and contact details.
+- **Q&A mode:** answers questions about Maneuver's services, process, pricing model, team, and case studies from a local knowledge base.
 
-Clone the repo, add API keys, run the Python agent and Vite frontend in two terminals, then open `http://localhost:5173`. Click "Start conversation", grant microphone access, and the agent should greet you, answer questions, update visuals, and save lead data on wrap-up.
+The frontend reacts while the call is happening:
+
+- service cards appear when the visitor asks about services
+- case study cards appear when the visitor asks about examples or results
+- process diagrams and service details render for more specific questions
+- discovery notes populate live as the visitor speaks
+- a transcript strip shows the conversation in-session
+- captured lead data is saved to `maneuver-voice-agent/agent/leads.json` when the conversation ends
+
+## Assignment Coverage
+
+| Requirement | Implemented |
+| --- | --- |
+| Real-time voice in / voice out | LiveKit room with Python voice pipeline |
+| LiveKit Agents framework | `livekit-agents` Python worker |
+| STT -> LLM -> TTS pipeline | Deepgram Nova-3 -> Gemini 2.5 Flash -> Cartesia Sonic-2 |
+| Turn detection | Silero VAD with low-latency silence settings |
+| Interruptions | LiveKit voice pipeline with interruptible speech |
+| Discovery mode | Founder-style system prompt plus deterministic lead extraction |
+| Q&A mode | Local markdown knowledge base in `agent/knowledge_base.md` |
+| Discovery persistence | Local append-only `agent/leads.json` |
+| Browser frontend | React + Vite + LiveKit components |
+| Synchronized visual layer | LiveKit RPC from agent to React visual panel |
+| Live discovery notes | RPC updates to the frontend lead panel |
+| Transcript view | LiveKit data-channel transcript strip |
+| Agent state indicator | Listening / thinking / speaking UI |
+| Demo readiness | Script and walkthrough in `maneuver-voice-agent/docs` |
 
 ## Tech Stack
 
 | Layer | Choice | Why |
-|-------|--------|-----|
-| Voice Framework | LiveKit Agents (Python) | Required; Python SDK most mature |
-| STT | Deepgram Nova-3 | ~150ms latency, best conversational accuracy, official plugin |
-| LLM | Gemini 2.0 Flash (Google AI Studio) | Fast tool calling, free tier, OpenAI-compatible endpoint |
-| TTS | Cartesia Sonic-2 | ~80ms TTFB, most natural prosody for real-time voice |
-| VAD | Silero | Battle-tested, runs locally, excellent turn detection |
-| Frontend | React 18 + Vite + Tailwind | Fast local iteration and a small, focused UI surface |
-| Animations | Framer Motion | Declarative, performant, AnimatePresence for transitions |
+| --- | --- | --- |
+| Realtime transport | LiveKit Cloud | Required by the assignment; handles WebRTC audio rooms and participant RPC |
+| Agent framework | LiveKit Agents for Python | Direct support for STT/LLM/TTS pipelines, tool calls, VAD, room lifecycle, and worker dispatch |
+| Speech-to-text | Deepgram Nova-3 | Fast streaming transcription, strong conversational accuracy, official LiveKit plugin |
+| LLM | Gemini 2.5 Flash through OpenAI-compatible API | Low latency, good tool calling, practical free-tier development path |
+| Optional local LLM | Ollama OpenAI-compatible endpoint | Useful fallback for local experimentation |
+| Text-to-speech | Cartesia Sonic-2 | Low time-to-first-audio and natural real-time voice quality |
+| Voice activity detection | Silero VAD | Local VAD, reliable turn boundaries, tunable silence duration |
+| Frontend | React 18 + Vite | Fast local development and easy LiveKit integration |
+| Styling | Tailwind CSS | Compact, consistent UI styling |
+| Animation | Framer Motion | Smooth visual panel transitions and discovery note updates |
+| Persistence | Local JSON file | Simple, inspectable output for the assignment deliverable |
+
+## Repository Layout
+
+```text
+.
++-- README.md
++-- maneuver-voice-agent
+    +-- agent
+    |   +-- agent.py              # LiveKit voice pipeline and room event handlers
+    |   +-- tools.py              # LLM tools, visual RPC, lead capture, persistence
+    |   +-- token_server.py       # Local token endpoint for frontend room joins
+    |   +-- main.py               # Worker entrypoint
+    |   +-- knowledge_base.md     # Maneuver services, process, pricing, case studies
+    |   +-- requirements.txt
+    |   +-- leads.json            # Captured discovery output
+    +-- frontend
+    |   +-- src
+    |   |   +-- App.jsx
+    |   |   +-- components        # Voice UI, visual panel, notes, transcript
+    |   |   +-- slides            # Services, process, service detail visuals
+    |   |   +-- rpcPayload.js     # Shared frontend RPC parsing helpers
+    |   |   +-- tokenUtils.js
+    |   +-- package.json
+    |   +-- vite.config.js
+    +-- docs
+        +-- architecture.md
+        +-- workflows.md
+        +-- api-and-data-contracts.md
+        +-- demo-script.md
+        +-- walkthrough-30-min.md
+```
 
 ## Prerequisites
 
-1. Python 3.11+
-2. Node.js 20+
-3. ffmpeg: Mac `brew install ffmpeg`, Ubuntu `sudo apt install ffmpeg`, Windows from `ffmpeg.org`
-4. LiveKit Cloud account (free): `cloud.livekit.io`
-5. Deepgram API key (free, 100hr/month): `deepgram.com`
-6. Cartesia API key (free trial): `cartesia.ai`
-7. Google AI Studio API key (free): `aistudio.google.com`
+- Python 3.11+
+- Node.js 20+
+- ffmpeg available on PATH
+- LiveKit Cloud project
+- Deepgram API key
+- Cartesia API key
+- Google AI Studio API key
 
-## Setup & Running
+## Local Setup
 
-### 1. Clone
+Clone the repo and enter the project:
 
 ```bash
 git clone <repo-url>
-cd maneuver-voice-agent
+cd Talk-to-Founder-Voice-AI-Agent
 ```
 
-### 2. Agent setup
+Install Python dependencies:
 
 ```bash
-cd agent
+cd maneuver-voice-agent/agent
 pip install -r requirements.txt
-cp .env.example .env
+copy .env.example .env
 ```
 
-Fill in your keys. See Environment Variables below.
+Fill `maneuver-voice-agent/agent/.env`:
 
-### 3. Frontend setup
+```env
+LIVEKIT_URL=wss://your-project.livekit.cloud
+LIVEKIT_API_KEY=your_livekit_api_key
+LIVEKIT_API_SECRET=your_livekit_api_secret
+DEEPGRAM_API_KEY=your_deepgram_key
+CARTESIA_API_KEY=your_cartesia_key
+LLM_BACKEND=gemini
+GOOGLE_AI_API_KEY=your_google_ai_studio_key
+GEMINI_MODEL=gemini-2.5-flash
+```
+
+Install frontend dependencies:
 
 ```bash
 cd ../frontend
 npm install
-cp .env.example .env
 ```
 
-Fill in your keys.
+Create `maneuver-voice-agent/frontend/.env`:
 
-### 4. Run
+```env
+VITE_LIVEKIT_URL=wss://your-project.livekit.cloud
+VITE_TOKEN_SERVER_URL=http://localhost:8080
+```
 
-Terminal 1 — Agent:
+The browser does not need LiveKit API secrets. It requests a participant token from the local token server started by the Python agent.
+
+## Running Locally
+
+Start the Python agent and local token server:
 
 ```bash
-cd agent
+cd maneuver-voice-agent/agent
 python main.py dev
 ```
 
-Terminal 2 — Frontend:
+Start the frontend:
 
 ```bash
-cd frontend
+cd maneuver-voice-agent/frontend
 npm run dev
 ```
 
-Open `http://localhost:5173`. Click "Start conversation".
-
-## Environment Variables
-
-### agent/.env
-
-| Variable | Where to get it |
-|----------|----------------|
-| LIVEKIT_URL | LiveKit Cloud dashboard → your project → Settings → `wss://xxx.livekit.cloud` |
-| LIVEKIT_API_KEY | Same page, API Keys section |
-| LIVEKIT_API_SECRET | Same page, API Keys section |
-| DEEPGRAM_API_KEY | Deepgram Console → API Keys → Create Key |
-| CARTESIA_API_KEY | Cartesia Dashboard → API Keys |
-| GOOGLE_AI_API_KEY | Google AI Studio → Get API key |
-
-### frontend/.env
-
-| Variable | Value |
-|----------|-------|
-| VITE_LIVEKIT_URL | Same `wss://` URL as above |
-| VITE_LIVEKIT_API_KEY | Same LiveKit API key as above |
-| VITE_LIVEKIT_API_SECRET | Same LiveKit API secret as above |
-
-Security note: embedding API credentials in frontend env vars is acceptable only for local development. In production, token generation must move to a server-side endpoint.
-
-## Architecture
-
-LiveKit is the connective tissue. The browser and Python agent both join the same LiveKit room as participants. Browser audio is published over WebRTC, the agent subscribes to it, and synthesized agent speech is published back into the room for the browser to play.
-
-The voice pipeline runs in Python. Deepgram Nova-3 transcribes the user's speech, Gemini 2.0 Flash decides how to respond and when to call tools, and Cartesia Sonic-2 turns the response into low-latency speech. Silero VAD handles turn detection so the agent can listen, think, speak, and handle interruptions.
-
-The visual layer is driven by LiveKit RPC. Gemini calls tools such as `show_services_slide` or `update_lead_field`; the Python agent forwards those tool calls to the browser with RPC; React updates the visual panel or discovery notes immediately. This optimistic rendering is why slides appear as the agent starts speaking, not after it finishes.
+Open:
 
 ```text
-Browser (React)
-    |  WebRTC audio (bidirectional)
-    |  RPC tool calls (agent -> browser)
-    v
-LiveKit Cloud (room server)
-    |
-    v
-Python Agent
-    |-- Deepgram Nova-3 (STT)
-    |-- Gemini 2.0 Flash (LLM + tools)
-    |-- Cartesia Sonic-2 (TTS)
-    |
-    v
-leads.json (local)
+http://localhost:5173
 ```
 
-## Visual Layer — How It Works
+Click **Start conversation**, allow microphone access, and speak naturally.
 
-The agent defines tools such as `show_services_slide`, `show_service_detail`, `show_process_diagram`, `show_case_study`, and `update_lead_field`. When Gemini calls a visual tool, the agent sends a LiveKit RPC message to the frontend.
+## How The System Works
 
-`VisualPanel.jsx` registers the `show_visual` RPC method and routes payloads to the right view. `LeadPanel.jsx` registers `update_lead_field` and animates captured fields into the notes panel. These frontend updates happen independently from TTS playback, so visuals can appear while the agent is speaking.
+```mermaid
+flowchart LR
+    U["Visitor in browser"] -->|"microphone audio"| LK["LiveKit room"]
+    LK -->|"audio stream"| A["Python LiveKit Agent"]
+    A --> STT["Deepgram Nova-3 STT"]
+    STT --> LLM["Gemini 2.5 Flash"]
+    LLM --> TTS["Cartesia Sonic-2 TTS"]
+    TTS -->|"agent audio"| LK
+    LK -->|"audio playback"| U
+    A -->|"show_visual RPC"| VP["React VisualPanel"]
+    A -->|"update_lead_field RPC"| LP["React LeadPanel"]
+    A -->|"transcript data channel"| TS["TranscriptStrip"]
+    A -->|"append on end"| JSON["agent/leads.json"]
+```
 
-## Conversation Modes
+The Python agent and browser join the same LiveKit room. The browser publishes microphone audio; the agent subscribes, transcribes, reasons, speaks back, and sends visual state updates to the frontend. Visuals are triggered both by LLM tools and by deterministic transcript handlers for reliability.
 
-Discovery mode is the default. The agent opens with a short founder-style greeting, asks one question at a time, digs into the visitor's product problem, and captures lead fields as soon as they are mentioned.
+## Visual Layer
 
-Q&A mode is triggered when the visitor asks about Maneuver's services, process, pricing, team, or case studies. The agent answers from `agent/knowledge_base.md`, calls the relevant visual tool first, then smoothly returns to discovery with a question tied to the visitor's situation.
+The visual layer is driven by LiveKit RPC:
+
+- `show_visual` updates the main visual surface.
+- `update_lead_field` updates the discovery notes panel.
+- `call_ended` switches the UI into the final summary state.
+
+Supported visuals:
+
+- services overview
+- individual service detail
+- process diagram
+- freight brokerage case study
+- hospitality group case study
+- industrial supplier case study
+- call-ended lead summary
 
 ## Lead Capture
 
-Captured fields are `name`, `company`, `role`, `problem`, `timeline`, `budget`, and `contact_email`. On call end, `save_lead_and_end` appends the current lead to `maneuver-voice-agent/agent/leads.json` with a timestamp.
+Captured fields:
 
-Example entry:
+- `name`
+- `company`
+- `role`
+- `problem`
+- `timeline`
+- `budget`
+- `contact_email`
+- `notes`
+- `timestamp`
+
+Example `leads.json` entry:
 
 ```json
 {
+  "notes": "My name is Priya Sharma from BuildFast. | We need to automate customer support for our logistics clients. | We want something live in six weeks. | Project-based, maybe around $50k.",
   "name": "Priya Sharma",
   "company": "Buildfast",
-  "role": "Co-founder",
-  "problem": "Need to go from designs to MVP in 8 weeks",
-  "timeline": "Q3 2025",
-  "budget": "$50k-80k range",
+  "problem": "We need to automate customer support for our logistics clients.",
+  "timeline": "in six weeks",
+  "budget": "$50k",
   "contact_email": "priya@buildfast.example",
-  "timestamp": "2026-05-21T14:32:11.204Z"
+  "timestamp": "2026-05-23T10:20:31.442921+00:00"
 }
 ```
+## Deeper Documentation
 
-## What I'd Build Next (one more week)
+Detailed technical docs live in `maneuver-voice-agent/docs`:
 
-1. Server-side token generation with a FastAPI endpoint to remove credential exposure in frontend env vars.
-2. Embeddings-based knowledge base search to replace full context injection as the KB grows.
-3. Scheduling agent handoff so booking intent routes to a CalendlyAgent that books a real call.
-4. Admin dashboard in Next.js showing past leads, call duration, captured fields, and replay links.
-5. Follow-up email trigger where GPT-4o summarizes the call and SendGrid sends a personalized follow-up.
+- `architecture.md` - system design, component responsibilities, diagrams, tradeoffs
+- `workflows.md` - runtime flows for startup, voice turns, visuals, discovery capture, persistence
+- `api-and-data-contracts.md` - token endpoint, RPC payloads, data-channel messages, lead schema
+
+## What I Would Build Next With One More Week
+
+1. Add an authenticated founder/admin dashboard for browsing calls, leads, and transcripts.
+2. Persist full transcripts and optionally attach LiveKit room recording URLs.
+3. Replace full knowledge-base injection with embeddings retrieval once the KB grows.
+4. Add a scheduling handoff agent for booking follow-up calls.
+5. Trigger a Slack or email summary at the end of every qualified call.
+6. Add automated tests for RPC payload contracts and lead extraction edge cases.
+7. Move the local token server to a production FastAPI/Express backend with auth, rate limits, and deployment config.
 
 ## Known Limitations
 
-- Token generation is client-side, which is local-development only.
-- There is no authentication, so anyone with a valid local setup and URL can join the room.
-- The knowledge base is injected into context, not vector-searched, which will hit limits with a larger KB.
-- Gemini Flash can occasionally mis-fire tool calls; field normalization in `tools.py` handles common cases.
-- Transcript display is in-session only; transcripts are not persisted across sessions.
-- There is no call recording in this implementation.
+- This is intentionally local-first; there is no deployed production backend.
+- `leads.json` is a simple local persistence layer, not a database.
+- Discovery extraction is optimized for demo reliability, not exhaustive CRM-grade parsing.
+- The knowledge base is markdown-backed and small enough to inject directly.
+- The transcript strip is in-session only.
+- There is no authentication or admin UI in this submission.
+

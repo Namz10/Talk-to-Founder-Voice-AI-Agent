@@ -4,44 +4,48 @@ import { useRoomContext } from '@livekit/components-react';
 import ServicesSlide from '../slides/ServicesSlide.jsx';
 import ProcessDiagram from '../slides/ProcessDiagram.jsx';
 import ServiceDetail from '../slides/ServiceDetail.jsx';
+import { parseRpcPayload } from '../rpcPayload.js';
 
 const CASE_STUDIES = {
-  'northstar-ledger': {
-    client: 'Northstar Ledger',
-    industry: 'Fintech',
-    problem: 'High drop-off in onboarding - new users were abandoning onboarding before connecting their accounting data.',
+  'freight-brokerage': {
+    client: 'Freight Brokerage',
+    industry: 'Logistics & Supply Chain',
+    problem: 'Manual freight operations creating bottlenecks across dispatch, tracking, and customer comms. Dispatchers spent hours on repetitive tasks instead of managing exceptions.',
     solution:
-      'Maneuver redesigned the onboarding flow, clarified the product promise, and created a progressive setup experience that let users see value before completing every integration.',
-    outcome: 'Trial activation increased by 38%, onboarding completion improved from 42% to 67%, and sales-assisted demos shortened by one full call on average.',
-    service: 'UX & Interface Design',
-    duration: '6 weeks',
+      'Deployed intelligent automation for order intake, carrier matching, dispatch generation, and real-time status tracking with proactive exception alerts.',
+    outcome: '3+ hrs recovered per dispatcher per day, zero manual status updates, deployed in 4 weeks. Decoupled headcount growth from shipment volume.',
+    service: 'Agentic AI',
+    duration: '4 weeks',
   },
-  lumahire: {
-    client: 'LumaHire',
-    industry: 'Developer Tools & HR Tech',
-    problem: 'The recruiting platform had enterprise interest, but the product looked too lightweight for buyers evaluating it against larger incumbents.',
+  'hospitality-group': {
+    client: 'Hospitality Group',
+    industry: 'Hospitality & Property Management',
+    problem: 'Multi-property vacation rental group running on spreadsheets, WhatsApp groups, and disconnected tools — no unified system, no visibility, no scalability.',
     solution:
-      'Maneuver rebuilt the core dashboard experience, introduced a more credible brand identity system, and designed a reporting layer for hiring leaders.',
-    outcome: 'The team closed two mid-market pilots within 60 days, increased average contract value by 24%, and reduced custom demo preparation time by about 40%.',
-    service: 'Brand Identity + Design System',
+      'Built a complete guest operations platform with AI concierge across WhatsApp, Airbnb, and Booking.com, automated guest journey messaging, multi-level escalation, and operations dashboard.',
+    outcome: '80% of guest communication handled automatically, 3 channels unified into one platform, 24/7 AI concierge availability. Properties scale without proportional staff growth.',
+    service: 'Voice AI Concierge',
     duration: '8 weeks',
   },
-  carepilot: {
-    client: 'CarePilot',
-    industry: 'Health Tech',
-    problem: 'CarePilot was preparing for a seed extension and needed to prove that its care coordination concept could work as a usable MVP.',
+  'industrial-supplier': {
+    client: 'Industrial Supplier',
+    industry: 'Industrial & B2B Supply Chain',
+    problem: 'Supplier and customer communication scattered across WhatsApp, calls, and email — no centralized system, frequent errors, slow response times.',
     solution:
-      'Maneuver ran a discovery sprint, defined the MVP scope, built a React prototype, and then shipped a production pilot with secure role-based workflows.',
-    outcome: 'The pilot supported 11 clinic users in the first month, reduced manual coordination tasks by 31%, and helped the company secure a $1.8M seed extension.',
-    service: 'MVP Build',
-    duration: '10 weeks',
+      'Built a unified communication layer with WhatsApp automation and Voice AI agent handling orders, confirmations, and status inquiries across all channels.',
+    outcome: 'Single source of truth for all orders, 3 channels consolidated into 1 system, 60%+ reduction in manual data entry. System scales with volume.',
+    service: 'Voice AI Concierge + Agentic AI',
+    duration: '6 weeks',
   },
 };
 
 const CASE_ALIASES = {
-  finflow: 'northstar-ledger',
-  stackpilot: 'lumahire',
-  loophr: 'carepilot',
+  'northstar-ledger': 'freight-brokerage',
+  lumahire: 'hospitality-group',
+  carepilot: 'industrial-supplier',
+  finflow: 'freight-brokerage',
+  stackpilot: 'hospitality-group',
+  loophr: 'industrial-supplier',
 };
 
 const LEAD_LABELS = {
@@ -52,6 +56,7 @@ const LEAD_LABELS = {
   timeline: 'Timeline',
   budget: 'Budget',
   contact_email: 'Contact Email',
+  notes: 'Notes',
   timestamp: 'Timestamp',
 };
 
@@ -238,13 +243,9 @@ export default function VisualPanel({ callEndedLead = null, externalVisual = und
 
     const handler = async (data) => {
       try {
-        const payload = JSON.parse(data.payload || '{}');
-        applyVisual(payload);
+        applyVisual(parseRpcPayload(data));
       } catch (error) {
         console.error('Failed to parse show_visual RPC payload:', error, data.payload);
-        if (data.payload && typeof data.payload === 'object') {
-          applyVisual(data.payload);
-        }
       }
       return JSON.stringify({ success: true });
     };

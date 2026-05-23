@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from livekit.agents import JobContext, WorkerOptions, cli
 
 from agent import ManeuverAgent
-from token_server import run_token_server
+from token_server import AGENT_NAME, run_token_server
 
 
 load_dotenv()
@@ -30,4 +30,4 @@ async def entrypoint(ctx: JobContext):
 
 
 if __name__ == "__main__":
-    cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))
+    cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint, agent_name=AGENT_NAME))

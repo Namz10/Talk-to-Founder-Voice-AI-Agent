@@ -7,11 +7,14 @@ import VisualPanel from './components/VisualPanel.jsx';
 import TranscriptStrip from './components/TranscriptStrip.jsx';
 import DemoControls from './components/DemoControls.jsx';
 import { generateToken } from './tokenUtils.js';
-
-const ROOM_NAME = 'maneuver-demo';
+import { parseRpcPayload } from './rpcPayload.js';
 
 function randomIdentity() {
   return `visitor-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function randomRoomName() {
+  return `maneuver-demo-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function IdleVisual() {
@@ -33,15 +36,10 @@ function CallEndedBridge({ onEnded }) {
 
     const handler = async (data) => {
       try {
-        const lead = JSON.parse(data.payload || '{}');
-        onEnded(lead);
+        onEnded(parseRpcPayload(data));
       } catch (error) {
         console.error('Failed to parse call_ended RPC payload:', error, data.payload);
-        if (data.payload && typeof data.payload === 'object') {
-          onEnded(data.payload);
-        } else {
-          onEnded({ error: 'Failed to parse lead details' });
-        }
+        onEnded({ error: 'Failed to parse lead details' });
       }
       return JSON.stringify({ success: true });
     };
@@ -107,8 +105,13 @@ export default function App() {
   async function startConversation() {
     try {
       setAppState('connecting');
+      manuallyEndedRef.current = false;
+      setEndedLead(null);
+      setDemoVisual(undefined);
+      setDemoLeadPatch(null);
       const participantName = randomIdentity();
-      const signedToken = await generateToken(ROOM_NAME, participantName);
+      const roomName = randomRoomName();
+      const signedToken = await generateToken(roomName, participantName);
       setIdentity(participantName);
       setToken(signedToken);
     } catch (error) {
@@ -124,11 +127,10 @@ export default function App() {
     setAppState('ended');
   }, []);
 
-  const handleManualEnd = useCallback(() => {
+  const handleManualEnd = useCallback((lead = null) => {
     manuallyEndedRef.current = true;
-    setEndedLead({
-      name: 'Manual end',
-      problem: 'Conversation ended from browser control',
+    setEndedLead(lead || {
+      save_reason: 'manual_browser_end',
     });
     setAppState('ended');
   }, []);

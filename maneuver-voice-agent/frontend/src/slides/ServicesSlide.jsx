@@ -2,68 +2,36 @@ import { motion } from 'framer-motion';
 
 const SERVICES = [
   {
-    slug: 'product-discovery',
-    name: 'Product Discovery Sprint',
+    slug: 'ai-readiness',
+    name: 'AI Readiness Sprint',
     description:
-      'Rapid validation of your idea through user research, competitive mapping, and opportunity framing.',
+      '2-week diagnostic that turns "we should do something with AI" into a costed, prioritized roadmap.',
     duration: '2 weeks',
     tag: 'Strategy',
     tagColor: 'teal',
   },
   {
-    slug: 'ux-design',
-    name: 'UX & Interface Design',
-    description: 'End-to-end design from wireframes to high-fidelity, production-ready UI.',
-    duration: '4-8 weeks',
-    tag: 'Design',
-    tagColor: 'coral',
-  },
-  {
-    slug: 'brand-identity',
-    name: 'Brand Identity System',
-    description: 'Visual identity, logo, typography, color, and usage guidelines built for scale.',
-    duration: '3-4 weeks',
-    tag: 'Brand',
-    tagColor: 'teal',
-  },
-  {
-    slug: 'mvp-build',
-    name: 'MVP Build',
-    description: 'Full-stack React/Next.js build from approved designs, production-ready and documented.',
-    duration: '8-12 weeks',
-    tag: 'Engineering',
-    tagColor: 'coral',
-  },
-  {
-    slug: 'design-system',
-    name: 'Design System Creation',
-    description: 'Component library, tokens, documentation, and Storybook for consistent product teams.',
+    slug: 'agentic-ai',
+    name: 'Agentic AI',
+    description: 'Workflow agents that take real work off your team — order processing, dispatch, tracking, exception handling.',
     duration: '4-6 weeks',
-    tag: 'Design',
-    tagColor: 'teal',
-  },
-  {
-    slug: 'growth-optimization',
-    name: 'Growth & Conversion',
-    description: 'Funnel analysis, A/B test roadmap, landing page redesign, and retention hooks.',
-    duration: 'Ongoing',
-    tag: 'Growth',
+    tag: 'AI',
     tagColor: 'coral',
   },
   {
-    slug: 'tech-architecture',
-    name: 'Technical Architecture Review',
-    description: 'Audit of your current stack with a prioritized improvement roadmap.',
-    duration: '1 week',
-    tag: 'Engineering',
+    slug: 'voice-ai',
+    name: 'Voice AI Concierge',
+    description: 'Arabic + English voice agents handling up to 80% of customer inquiries automatically across phone and messaging.',
+    duration: '4-8 weeks',
+    tag: 'AI',
     tagColor: 'teal',
   },
   {
-    slug: 'retainer',
-    name: 'Ongoing Retainer',
-    description: 'Embedded design and strategy team. Monthly sprints, Slack access, weekly syncs.',
+    slug: 'fractional-cto',
+    name: 'Fractional CTO',
+    description: 'Ownership of your tech strategy, vendor decisions, and AI roadmap without a full-time hire.',
     duration: 'Monthly',
-    tag: 'Retainer',
+    tag: 'Advisory',
     tagColor: 'coral',
   },
 ];
@@ -81,7 +49,7 @@ export default function ServicesSlide() {
     <div className="flex h-full flex-col">
       <div className="mb-5 flex items-end justify-between gap-4">
         <h2 className="font-serif text-[22px] leading-none text-maneuver-text">What we do</h2>
-        <p className="text-[13px] text-maneuver-muted">8 core services</p>
+        <p className="text-[13px] text-maneuver-muted">4 core services</p>
       </div>
 
       <motion.div

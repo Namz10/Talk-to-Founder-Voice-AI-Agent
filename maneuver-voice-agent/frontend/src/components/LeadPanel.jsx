@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRoomContext } from '@livekit/components-react';
+import { parseRpcPayload } from '../rpcPayload.js';
 
 const FIELD_LABELS = {
   name: 'Name',
@@ -10,6 +11,7 @@ const FIELD_LABELS = {
   timeline: 'Timeline',
   budget: 'Budget',
   contact_email: 'Contact Email',
+  notes: 'Notes',
 };
 
 const EMPTY_LEAD = {
@@ -20,6 +22,7 @@ const EMPTY_LEAD = {
   timeline: '',
   budget: '',
   contact_email: '',
+  notes: '',
 };
 
 export default function LeadPanel({ demoLeadPatch = null }) {
@@ -40,18 +43,12 @@ export default function LeadPanel({ demoLeadPatch = null }) {
 
     const handler = async (data) => {
       try {
-        const { field, value } = JSON.parse(data.payload || '{}');
+        const { field, value } = parseRpcPayload(data);
         if (field && Object.prototype.hasOwnProperty.call(EMPTY_LEAD, field)) {
           setLeadFields((prev) => ({ ...prev, [field]: value }));
         }
       } catch (error) {
         console.error('Failed to parse update_lead_field RPC payload:', error, data.payload);
-        if (data.payload && typeof data.payload === 'object') {
-          const { field, value } = data.payload;
-          if (field && Object.prototype.hasOwnProperty.call(EMPTY_LEAD, field)) {
-            setLeadFields((prev) => ({ ...prev, [field]: value }));
-          }
-        }
       }
       return JSON.stringify({ success: true });
     };

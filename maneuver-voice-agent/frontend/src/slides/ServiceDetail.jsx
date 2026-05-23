@@ -1,92 +1,84 @@
 import { motion } from 'framer-motion';
 
 const SERVICE_DATA = {
-  'product-discovery': {
-    name: 'Product Discovery Sprint',
+  'ai-readiness': {
+    name: 'AI Readiness Sprint',
     description:
-      'A focused 2-week engagement that takes you from fuzzy idea to validated opportunity. We run stakeholder interviews, competitor teardowns, user research synthesis, and opportunity mapping - delivering a prioritized problem space and a clear product brief your team can execute against.',
+      'A focused 2-week diagnostic that turns "we should do something with AI" into a costed, prioritized roadmap. We analyze your workflows, find friction points, and map out exactly where AI can drive the highest return on investment.',
     duration: '2 weeks',
-    idealFor: 'Pre-seed to Series A founders',
-    priceRange: '$4,500 flat',
+    idealFor: 'Companies exploring AI but unsure where to start',
+    priceRange: 'Flat fee engagement',
     outcomes: [
-      'Validated problem statement',
-      'Competitive landscape map',
-      'User insight synthesis',
-      'Product brief & recommended next step',
+      'Prioritized AI roadmap',
+      'Cost & ROI estimates',
+      'Workflow friction analysis',
+      'Implementation-ready specs',
     ],
   },
-  'ux-design': {
-    name: 'UX & Interface Design',
+  'agentic-ai': {
+    name: 'Agentic AI',
     description:
-      'Full-cycle design from rough wireframes to production-ready UI. We work in Figma, run usability checks at each stage, and deliver annotated specs your engineers can build from without guesswork.',
-    duration: '4-8 weeks',
-    idealFor: 'Startups preparing for build or redesign',
-    priceRange: '$18k-$40k',
-    outcomes: ['Information architecture', 'Wireframe flows', 'High-fidelity UI', 'Dev-ready Figma file'],
-  },
-  'brand-identity': {
-    name: 'Brand Identity System',
-    description:
-      'Visual identity built for a company that plans to grow. Logo system, type hierarchy, color palette, iconography style, and a brand usage guide your team can actually follow.',
-    duration: '3-4 weeks',
-    idealFor: 'Pre-launch or rebranding startups',
-    priceRange: '$12k-$22k',
-    outcomes: ['Logo & lockup variants', 'Color & type system', 'Brand guidelines PDF', 'Asset library'],
-  },
-  'mvp-build': {
-    name: 'MVP Build',
-    description:
-      'We take your approved designs and build them - React/Next.js frontend, documented API integrations, staging + production environments. We ship working software, not prototypes.',
-    duration: '8-12 weeks',
-    idealFor: 'Founders with validated designs ready to build',
-    priceRange: '$35k-$80k',
-    outcomes: ['Production React/Next.js app', 'API integrations', 'Staging + prod deploy', 'Technical handoff docs'],
-  },
-  'design-system': {
-    name: 'Design System Creation',
-    description:
-      'A living component library that keeps your product consistent as the team scales. Built in Figma and React, with tokens, documentation, and Storybook so every designer and engineer works from the same source of truth.',
+      'Workflow agents that take real work off your team\'s plate — deployed in 4–6 weeks. We build custom agents that handle complex, multi-step tasks like order processing, carrier matching, dispatch, tracking, and exception handling.',
     duration: '4-6 weeks',
-    idealFor: 'Series A+ teams with 2+ designers or engineers',
-    priceRange: '$20k-$35k',
-    outcomes: ['Figma component library', 'React component library', 'Design tokens', 'Storybook docs'],
+    idealFor: 'Founders looking to automate heavy back-office operations',
+    priceRange: 'Scoped after diagnostic',
+    outcomes: [
+      'Custom workflow agents',
+      'Seamless API integrations',
+      'Exception dashboards',
+      'Performance logs & metrics',
+    ],
   },
-  'growth-optimization': {
-    name: 'Growth & Conversion Optimization',
+  'voice-ai': {
+    name: 'Voice AI Concierge',
     description:
-      'Data-informed audit of your funnel, landing pages, and onboarding flow. We identify the biggest leaks, design fixes, and build an A/B test roadmap you can run without us.',
-    duration: 'Ongoing or 6-week sprint',
-    idealFor: 'Post-launch products with traffic but weak conversion',
-    priceRange: '$8k-$15k / sprint',
-    outcomes: ['Funnel audit report', 'Redesigned landing pages', 'A/B test roadmap', 'Retention hook map'],
+      'Arabic + English voice and text agents handling up to 80% of customer inquiries automatically across phone, WhatsApp, and messaging channels with 24/7 availability and zero latency.',
+    duration: '4-8 weeks',
+    idealFor: 'Businesses with high volume customer inquiries',
+    priceRange: 'Scoped after diagnostic',
+    outcomes: [
+      'Bilingual (AR/EN) Voice Agent',
+      'Multi-channel (Phone/WhatsApp)',
+      'CRM & booking system sync',
+      'Real-time logs & analytics',
+    ],
   },
-  'tech-architecture': {
-    name: 'Technical Architecture Review',
+  'fractional-cto': {
+    name: 'Fractional CTO',
     description:
-      'A senior engineer reviews your current stack, infrastructure, and codebase patterns. Deliverable is a prioritized roadmap of risks and improvements - no sales pitch, just honest assessment.',
-    duration: '1 week',
-    idealFor: 'Founders before a major scaling push',
-    priceRange: '$3,500 flat',
-    outcomes: ['Architecture risk report', 'Prioritized improvement roadmap', '1-hour debrief call'],
-  },
-  retainer: {
-    name: 'Ongoing Retainer',
-    description:
-      'Your embedded design and strategy team, available monthly. Includes weekly sprint planning, async Slack access, monthly strategy session, and a dedicated project manager. We become part of your team without the overhead of full-time hires.',
+      'Ownership of your tech strategy, vendor decisions, and AI roadmap without a full-time hire. Weekly syncs, async Slack/Teams access, and hands-on guidance to guide your team and ensure tech aligns with business growth.',
     duration: 'Monthly, min 3 months',
-    idealFor: 'Funded startups scaling their product team',
-    priceRange: '$8k-$20k / month',
-    outcomes: ['Dedicated design capacity', 'Weekly sprint delivery', 'Slack async access', 'Monthly strategy session'],
+    idealFor: '10-200 person companies without a full-time CTO',
+    priceRange: 'Monthly retainer',
+    outcomes: [
+      'Tech strategy & architecture',
+      'Vendor & tooling selection',
+      'Weekly executive syncs',
+      'Async Slack/Teams support',
+    ],
   },
 };
 
 const SERVICE_ALIASES = {
-  'ux-interface-design': 'ux-design',
-  'brand-identity-system': 'brand-identity',
-  'design-system-creation': 'design-system',
-  'growth-conversion-optimization': 'growth-optimization',
-  'technical-architecture-review': 'tech-architecture',
-  'ongoing-retainer': 'retainer',
+  // Map old service IDs to new ones for seamless compatibility
+  'product-discovery': 'ai-readiness',
+  'ux-design': 'agentic-ai',
+  'ux-interface-design': 'agentic-ai',
+  'brand-identity': 'ai-readiness',
+  'brand-identity-system': 'ai-readiness',
+  'mvp-build': 'agentic-ai',
+  'design-system': 'agentic-ai',
+  'design-system-creation': 'agentic-ai',
+  'growth-optimization': 'agentic-ai',
+  'growth-conversion-optimization': 'agentic-ai',
+  'tech-architecture': 'fractional-cto',
+  'technical-architecture-review': 'fractional-cto',
+  'retainer': 'fractional-cto',
+  'ongoing-retainer': 'fractional-cto',
+  
+  // Voice variations
+  'voice-ai-concierge': 'voice-ai',
+  'voice-concierge': 'voice-ai',
 };
 
 export default function ServiceDetail({ service }) {

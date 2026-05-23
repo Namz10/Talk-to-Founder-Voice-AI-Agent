@@ -3,32 +3,26 @@ import { motion } from 'framer-motion';
 const STEPS = [
   {
     number: '01',
-    name: 'Intake Call',
-    description: '30-min conversation to understand your goals, constraints, and fit.',
-    duration: 'Day 1',
+    name: 'Discovery Call',
+    description: '30-min conversation to understand your business, current paint points, and decision timeline.',
+    duration: '30 min',
   },
   {
     number: '02',
-    name: 'Proposal & Scope',
-    description: 'Tailored proposal with timeline, deliverables, and fixed pricing.',
-    duration: 'Days 2-5',
+    name: 'Diagnostic & Scope',
+    description: 'We map workflows, identify AI opportunities, and define the shape of our engagement.',
+    duration: '3-5 days',
   },
   {
     number: '03',
-    name: 'Kickoff & Discovery',
-    description: 'Deep dive into your users, market, and existing product.',
-    duration: 'Week 1-2',
+    name: 'Build & Deploy',
+    description: 'Focused sprints with visible progress, async updates, and regular live review sessions.',
+    duration: '2-6 weeks',
   },
   {
     number: '04',
-    name: 'Execution Sprints',
-    description: 'Weekly sprints with async updates and live review sessions.',
-    duration: 'Weeks 3-N',
-  },
-  {
-    number: '05',
     name: 'Handoff & Support',
-    description: 'Full documentation, code transfer, and 30-day support window.',
+    description: 'Full documentation, thorough training, and a 30-day support window post-launch.',
     duration: 'Final week',
   },
 ];

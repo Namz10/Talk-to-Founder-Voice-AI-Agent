@@ -5,6 +5,9 @@ import urllib.parse
 import threading
 from livekit import api
 
+AGENT_NAME = "maneuver-agent"
+
+
 class TokenHandler(BaseHTTPRequestHandler):
     def end_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -52,6 +55,21 @@ class TokenHandler(BaseHTTPRequestHandler):
                         can_subscribe=True,
                         can_publish_data=True
                     ))
+                if (
+                    hasattr(api, "RoomConfiguration")
+                    and hasattr(api, "RoomAgentDispatch")
+                    and hasattr(token, "with_room_config")
+                ):
+                    token = token.with_room_config(
+                        api.RoomConfiguration(
+                            agents=[
+                                api.RoomAgentDispatch(
+                                    agent_name=AGENT_NAME,
+                                    metadata=json.dumps({"source": "maneuver-web-demo"}),
+                                )
+                            ]
+                        )
+                    )
                 jwt_token = token.to_jwt()
 
                 self.send_response(200)
@@ -68,7 +86,11 @@ class TokenHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 def run_token_server(port=8080):
-    server = HTTPServer(('0.0.0.0', port), TokenHandler)
+    try:
+        server = HTTPServer(('0.0.0.0', port), TokenHandler)
+    except OSError as exc:
+        print(f"Token server not started on port {port}: {exc}")
+        return None
     server_thread = threading.Thread(target=server.serve_forever, daemon=True)
     server_thread.start()
     print(f"Secure Token Server running on port {port}")
