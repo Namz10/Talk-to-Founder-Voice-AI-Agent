@@ -1,10 +1,11 @@
 [
   {
-    "notes": "I want you to walk me through a case study related to hospitality by maneuver | Okay. Need a AI concierge what across WhatsApp for my company. And the timeline is three weeks starting from June, and my budget is $10,000 | We'll talk about this later. Right now, want you to end this call | Goodbye",
+    "notes": "The name of my company is Blossom AI | Before I answer that, services do you offer | Can you show me a case study? Ideally, something in logistics or freight | Okay. Later in the day, you can reach out to me at Namita@Gmail.com",
     "name": "Namita",
-    "problem": "Okay. Need a AI concierge what across WhatsApp for my company. And the timeline is three weeks starting from June, and my budget is $10,000",
-    "company": "June",
-    "budget": "$10,000",
-    "timestamp": "2026-05-23T08:08:23.250251+00:00"
+    "problem": "Yes. We help logistic teams manage customer support, But right now, too many shipment status questions are handled manually. We want to automate the repetitive support work without losing quality",
+    "budget": "$5,000",
+    "company": "Blossom Ai",
+    "contact_email": "Namita@Gmail.com",
+    "timestamp": "2026-05-24T06:16:19.394161+00:00"
   }
 ]
